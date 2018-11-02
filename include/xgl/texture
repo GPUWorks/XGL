@@ -1,0 +1,76 @@
+#ifndef XGL_TEXTURE_HPP
+#define XGL_TEXTURE_HPP
+
+#include <GL/gl3w.h>
+#include <utility>
+
+namespace xgl
+{
+	struct texture
+	{
+		GLuint id;
+
+	public:
+		texture() : id(0) {
+
+		}
+
+		explicit texture(GLenum target) {
+			glCreateTextures(target, 1, &id);
+		}
+
+		texture(texture const &) = delete;
+
+		texture(texture && other) {
+			std::swap(id, other.id);
+		}
+
+		~texture()
+		{
+			if(id != 0)
+				glDeleteTextures(1, &id);
+		}
+	public:
+		void bind(GLuint unit) {
+			glBindTextureUnit(unit, id);
+		}
+
+		void generateMipMaps() {
+			glGenerateTextureMipmap(id);
+		}
+
+		void storage1D(GLsizei levels, GLenum internalFormat, GLsizei width) {
+			glTextureStorage1D(id, levels, internalFormat, width);
+		}
+
+		void storage2D(GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height) {
+			glTextureStorage2D(id, levels, internalFormat, width, height);
+		}
+
+		void storage3D(GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth) {
+			glTextureStorage3D(id, levels, internalFormat, width, height, depth);
+		}
+
+		void subImage1D(GLint level, GLint xoffset, GLsizei width, GLenum format, GLenum type, const void *pixels) {
+			glTextureSubImage1D(id, level, xoffset, width, format, type, pixels);
+		}
+
+		void subImage2D(GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void *pixels) {
+			glTextureSubImage2D(id, level, xoffset, yoffset, width, height, format, type, pixels);
+		}
+
+		void subImage3D(GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum format, GLenum type, const void *pixels) {
+			glTextureSubImage3D(id, level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels);
+		}
+	public:
+		operator GLuint () const {
+			return id;
+		}
+
+		operator bool() const {
+			return (id != 0);
+		}
+	};
+}
+
+#endif
